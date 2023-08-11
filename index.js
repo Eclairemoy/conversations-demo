@@ -9,7 +9,6 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const client = new intercom.Client({ tokenAuth: { token: process.env.INTERCOM_TOKEN } });
 
 // Automate the export of all conversations tagged as “Churn Risk” on a regular basis.
-
 async function getAllConversations() {
   // find all of the convos by churn risk value = 6948447
   const response = await client.conversations.search({
@@ -52,7 +51,7 @@ async function packageConversations(conversations) {
   fs.writeFileSync(filename, data);
 
   // send the file as an email attachment
-  // sendEmail(filename);
+  sendEmail(filename);
   return convoObj;
 }
 
@@ -67,36 +66,34 @@ async function getIndividualConversation(conversationId) {
   return response;
 }
 
-// function sendEmail(filename) {
-//   // send the file as an email attachment
-//   pathToAttachment = `${__dirname}/${filename}`;
-//   attachment = fs.readFileSync(pathToAttachment).toString("base64");
-//   const msg = {
-//     to: 'liz@lizmoy.com',
-//     from: process.env.SENDGRID_FROM_EMAIL,
-//     subject: 'Weekly flagged conversations',
-//     text: 'See attached',
-//     attachments: [
-//       {
-//         content: attachment,
-//         filename: filename,
-//         type: "application/json",
-//         disposition: "attachment"
-//       }
-//     ]
-//   };
-//   sgMail.send(msg).catch(err => {
-//     console.log(err);
-//   });
-// }
+function sendEmail(filename) {
+  // send the file as an email attachment
+  pathToAttachment = `${__dirname}/${filename}`;
+  attachment = fs.readFileSync(pathToAttachment).toString("base64");
+  const msg = {
+    to: 'liz@lizmoy.com',
+    from: process.env.SENDGRID_FROM_EMAIL,
+    subject: 'Weekly flagged conversations',
+    text: 'See attached',
+    attachments: [
+      {
+        content: attachment,
+        filename: filename,
+        type: "application/json",
+        disposition: "attachment"
+      }
+    ]
+  };
+  sgMail.send(msg).catch(err => {
+    console.log(err);
+  });
+}
 
-// // schedule the job to run every Friday at 15:30 London Time
-// var job = new CronJob(
-//     '* 30 15 * * 5',
-//     packageConversations(),
-//     null,
-//     true,
-//     'Europe/London'
-// );
-
-getAllConversations()
+// schedule the job to run every Friday at 15:30 London Time
+var job = new CronJob(
+    '* 30 15 * * 5',
+    packageConversations(),
+    null,
+    true,
+    'Europe/London'
+);
