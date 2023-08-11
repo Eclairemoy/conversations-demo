@@ -90,7 +90,7 @@ function sendEmail(filename) {
 }
 
 // schedule the job to run every Friday at 15:30 London Time
-var job = new CronJob(
+const job = new CronJob(
     '* 30 15 * * 5',
     packageConversations(),
     null,
