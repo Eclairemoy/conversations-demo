@@ -28,7 +28,6 @@ async function getAllConversations() {
       console.log(error);
   });
 
-  console.log(conversations);
   return conversations;
 }
 
@@ -47,7 +46,7 @@ async function packageConversations(conversations) {
 
   // write to a file
   const timestamp = Date.now();
-  const filename = 'conversations_' + timestamp + '.json';
+  const filename = `conversations_${timestamp}.json`;
   fs.writeFileSync(filename, data);
 
   // send the file as an email attachment
